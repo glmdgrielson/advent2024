@@ -31,11 +31,11 @@ fn parse_input(text: &str) -> Result<Lists, AdventError> {
         .map(|(one, two)| {
             let one = one
                 .parse::<u32>()
-                .map_err(|err| AdventError::Parse(format!("ParseIntError: {}", err.to_string())));
+                .map_err(|err| AdventError::Parse(format!("ParseIntError: {}", err)));
             // (one.parse::<u32>(), two.parse::<u32>())
             let two = two
                 .parse::<u32>()
-                .map_err(|err| AdventError::Parse(format!("ParseIntError: {}", err.to_string())));
+                .map_err(|err| AdventError::Parse(format!("ParseIntError: {}", err)));
             match (one, two) {
                 (Ok(one), Ok(two)) => Ok((one, two)),
                 (Err(one), _) => Err(one),
@@ -63,7 +63,7 @@ fn part_one(data: &Lists) -> u32 {
     two.sort();
 
     one.into_iter()
-        .zip(two.into_iter())
+        .zip(two)
         .map(|(one, two)| one.abs_diff(two))
         .sum()
 }
@@ -75,11 +75,13 @@ fn part_one(data: &Lists) -> u32 {
 fn part_two(data: &Lists) -> usize {
     let (one, two): (Vec<_>, Vec<_>) = data.0.clone().into_iter().unzip();
 
-    one.into_iter().map(|num| {
-        let count = two.iter().filter(|&item| num == *item).count();
+    one.into_iter()
+        .map(|num| {
+            let count = two.iter().filter(|&item| num == *item).count();
 
-        count * (num as usize)
-    }).sum()
+            count * (num as usize)
+        })
+        .sum()
 }
 
 fn main() -> Result<(), AdventError> {
