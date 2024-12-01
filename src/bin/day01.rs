@@ -17,6 +17,7 @@ struct Lists(Vec<(u32, u32)>);
 fn parse_input(text: &str) -> Result<Lists, AdventError> {
     let lines: Vec<(u32, u32)> = text
         .lines()
+        // Split each line into two numbers.
         .map(|line| {
             let mut numbers = line.split_ascii_whitespace();
             let one = numbers.next();
@@ -24,15 +25,16 @@ fn parse_input(text: &str) -> Result<Lists, AdventError> {
 
             (one, two)
         })
+        // Ensure that both pairs exist.
         .filter_map(|pair| match pair {
             (Some(one), Some(two)) => Some((one.to_string(), two.to_string())),
             _ => None,
         })
+        // Double check that both pairs are valid numbers.
         .map(|(one, two)| {
             let one = one
                 .parse::<u32>()
                 .map_err(|err| AdventError::Parse(format!("ParseIntError: {}", err)));
-            // (one.parse::<u32>(), two.parse::<u32>())
             let two = two
                 .parse::<u32>()
                 .map_err(|err| AdventError::Parse(format!("ParseIntError: {}", err)));
@@ -42,6 +44,8 @@ fn parse_input(text: &str) -> Result<Lists, AdventError> {
                 (Ok(_), Err(two)) => Err(two),
             }
         })
+
+        // Gather everything up and fail if numerical conversion failed.
         .collect::<Result<Vec<_>, AdventError>>()?;
     Ok(Lists(lines))
 }
@@ -64,6 +68,8 @@ fn part_one(data: &Lists) -> u32 {
 
     one.into_iter()
         .zip(two)
+        // Get the difference between one and two, without having
+        // to check which one is greater than the other.
         .map(|(one, two)| one.abs_diff(two))
         .sum()
 }
@@ -76,9 +82,12 @@ fn part_two(data: &Lists) -> usize {
     let (one, two): (Vec<_>, Vec<_>) = data.0.clone().into_iter().unzip();
 
     one.into_iter()
+        // For each item in the first list...
         .map(|num| {
+            // ...figure out how often it appears in the second...
             let count = two.iter().filter(|&item| num == *item).count();
 
+            // ...and multiply it by the item's value.
             count * (num as usize)
         })
         .sum()
