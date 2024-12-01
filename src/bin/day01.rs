@@ -53,8 +53,8 @@ fn parse_input(text: &str) -> Result<Lists, AdventError> {
 /// the smallest value in both lists plus the distance between
 /// the second smallest value in both lists, all the way up to
 /// the distance between the largest values in both lists.
-fn part_one(data: Lists) -> u32 {
-    let (one, two): (Vec<_>, Vec<_>) = data.0.into_iter().unzip();
+fn part_one(data: &Lists) -> u32 {
+    let (one, two): (Vec<_>, Vec<_>) = data.0.clone().into_iter().unzip();
     let mut one: Vec<_> = one.clone();
     let mut two: Vec<_> = two.clone();
 
@@ -62,14 +62,32 @@ fn part_one(data: Lists) -> u32 {
     one.sort();
     two.sort();
 
-    one.into_iter().zip(two.into_iter()).map(|(one, two)| one.abs_diff(two)).sum()
+    one.into_iter()
+        .zip(two.into_iter())
+        .map(|(one, two)| one.abs_diff(two))
+        .sum()
+}
+
+/// Find the similarity score.
+///
+/// The similarity score is measured as the number of times a
+/// value in list 1 appears in list 2.
+fn part_two(data: &Lists) -> usize {
+    let (one, two): (Vec<_>, Vec<_>) = data.0.clone().into_iter().unzip();
+
+    one.into_iter().map(|num| {
+        let count = two.iter().filter(|&item| num == *item).count();
+
+        count * (num as usize)
+    }).sum()
 }
 
 fn main() -> Result<(), AdventError> {
     let file = read_to_string("src/input/day01.txt")?;
     let data = parse_input(&file)?;
-    
-    println!("The total distance is {}", part_one(data));
+
+    println!("The total distance is {}", part_one(&data));
+    println!("The similarity score is {}", part_two(&data));
     Ok(())
 }
 
@@ -98,8 +116,18 @@ mod test {
         let file = parse_input(&load_input());
         let data = file.unwrap();
 
-        let value = part_one(data);
+        let value = part_one(&data);
 
         assert_eq!(value, 11);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let file = parse_input(&load_input());
+        let data = file.unwrap();
+
+        let value = part_two(&data);
+
+        assert_eq!(value, 31);
     }
 }
