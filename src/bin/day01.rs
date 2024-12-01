@@ -55,13 +55,22 @@ fn parse_input(text: &str) -> Result<Lists, AdventError> {
 /// the distance between the largest values in both lists.
 fn part_one(data: Lists) -> u32 {
     let (one, two): (Vec<_>, Vec<_>) = data.0.into_iter().unzip();
-    todo!()
+    let mut one: Vec<_> = one.clone();
+    let mut two: Vec<_> = two.clone();
+
+    // Sort both collections.
+    one.sort();
+    two.sort();
+
+    one.into_iter().zip(two.into_iter()).map(|(one, two)| one.abs_diff(two)).sum()
 }
 
 fn main() -> Result<(), AdventError> {
     let file = read_to_string("src/input/day01.txt")?;
-    let data = parse_input(&file);
-    todo!();
+    let data = parse_input(&file)?;
+    
+    println!("The total distance is {}", part_one(data));
+    Ok(())
 }
 
 #[cfg(test)]
@@ -82,5 +91,15 @@ mod test {
         let data = data.unwrap();
 
         assert_eq!(data.0[0], (3, 4));
+    }
+
+    #[test]
+    fn test_part_one() {
+        let file = parse_input(&load_input());
+        let data = file.unwrap();
+
+        let value = part_one(data);
+
+        assert_eq!(value, 11);
     }
 }
