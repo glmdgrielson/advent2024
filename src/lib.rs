@@ -7,4 +7,6 @@ use std::io::Error as IOError;
 pub enum AdventError {
     #[error("Error reading file: {0}")]
     File(#[from] IOError),
+    #[error("Parsing error: {0}")]
+    Parse(String),
 }
