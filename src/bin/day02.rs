@@ -65,18 +65,52 @@ fn part_one(data: &[Report]) -> usize {
         // used so that we can check a reverse ordering.
         .filter(|report| report.is_sorted())
         // Check condition 2.
-        .filter(|report| {
-            report
-                .has_safe_delta()
-        })
+        .filter(|report| report.has_safe_delta())
         .count()
 }
+
+/// Find the number of reports that are safe with the Problem Dampener.
+///
+/// The definition of safe remains the same, but now there's a new
+/// wrinkle: we can remove one item from a report and still have it
+/// qualify as safe.
+fn part_two(data: &[Report]) -> usize {
+    let (passed, failed): (Vec<_>, Vec<_>) = data
+        .iter()
+        .partition(|report| report.is_sorted() && report.has_safe_delta());
+
+    let failed = failed
+        .into_iter()
+        .filter(|&report| {
+            report.0.iter().enumerate().any(|(idx, _)| {
+                let mut items = report.0.clone();
+                items.remove(idx);
+                let report = Report(items);
+
+                report.is_sorted() && report.has_safe_delta()
+            })
+        })
+        .count();
+
+    //todo!();
+
+    passed.len() + failed
+}
+
+// fn fix_unsorted(report: &Report) -> bool {
+//     let (rise, fall): (Vec<_>, Vec<_>) = &report.0[1..];
+//     todo!()
+// }
 
 fn main() -> Result<(), AdventError> {
     let file = read_to_string("src/input/day02.txt")?;
     let data = parse_input(&file)?;
 
     println!("The number of safe reports is {}", part_one(&data));
+    println!(
+        "The number of safe reports after dampening is {}",
+        part_two(&data)
+    );
 
     Ok(())
 }
@@ -121,5 +155,10 @@ mod test {
     #[test]
     fn test_part_one() {
         assert_eq!(part_one(&*INPUT), 2);
+    }
+
+    #[test]
+    fn test_part_two() {
+        assert_eq!(part_two(&INPUT), 4);
     }
 }
