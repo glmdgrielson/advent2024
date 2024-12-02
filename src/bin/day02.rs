@@ -4,6 +4,8 @@
 //! plant of the North Pole today! Apparently they've been getting
 //! some odd readings lately, so we might as well try to help.
 
+#![warn(clippy::all)]
+
 use advent2024::AdventError;
 use std::fs::read_to_string;
 
@@ -30,7 +32,7 @@ impl Report {
             // Get the change in value for each pair.
             .map(|pair| pair[0].abs_diff(pair[1]))
             // Test that every pair changed by a safe value.
-            .all(|diff| 1 <= diff && diff <= 3)
+            .all(|diff| (1..=3).contains(&diff))
     }
 }
 
