@@ -94,15 +94,8 @@ fn part_two(data: &[Report]) -> usize {
         })
         .count();
 
-    //todo!();
-
     passed.len() + failed
 }
-
-// fn fix_unsorted(report: &Report) -> bool {
-//     let (rise, fall): (Vec<_>, Vec<_>) = &report.0[1..];
-//     todo!()
-// }
 
 fn main() -> Result<(), AdventError> {
     let file = read_to_string("src/input/day02.txt")?;
