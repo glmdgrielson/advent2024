@@ -153,7 +153,6 @@ mod test {
         let file = read_to_string("src/input/day03-test2.txt").unwrap();
         let codes = parse_input(&file);
 
-        println!("{:?}", codes);
         assert_eq!(part_two(&codes), 48);
     }
 }
