@@ -8,6 +8,7 @@ use advent2024::AdventError;
 use simple_grid::{Grid, GridIndex};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+/// The possible characters in the word search.
 enum Letter {
     X,
     M,
@@ -50,6 +51,8 @@ fn part_one(data: &Grid<Letter>) -> usize {
                 .enumerate()
                 .filter(|(_, cell)| cell.is_some_and(|ch| data.get(ch) == Some(&Letter::M)))
                 .collect::<Vec<_>>();
+            
+            // Check that there is an A in the same direction.
             let a_indices = m_indices.into_iter().filter_map(|(dir, idx)| {
                 let Some(idx) = idx else {
                     return None;
@@ -61,6 +64,8 @@ fn part_one(data: &Grid<Letter>) -> usize {
                     _ => None,
                 }
             });
+
+            // Check that there is an S in the same direction.
             let s_indices = a_indices
                 .into_iter()
                 .filter_map(|(dir, idx)| {
@@ -78,6 +83,11 @@ fn part_one(data: &Grid<Letter>) -> usize {
         .sum()
 }
 
+/// Find the items in the neighbors of this cell, if they exist.
+///
+/// This will always return a list of eight, in the order of
+/// N, NE, E, SE, S, SW, W, NW. If the cell does not exist in
+/// that direction, [Option::None] is returned.
 fn find_neighbors<T>(grid: &Grid<T>, idx: GridIndex) -> Vec<Option<GridIndex>> {
     let neighbors = [
         idx.up(),
@@ -115,6 +125,9 @@ fn part_two(grid: &Grid<Letter>) -> usize {
 }
 
 /// Given an index, find the number of crosses it is a part of.
+///
+/// Note that crosses only count if the lines are _diagonal_,
+/// not horizontal or vertical.
 fn find_crosses(grid: &Grid<Letter>, idx: GridIndex) -> bool {
     // This is a pathological check. It _should_ never get 
     // to this point, but just in case it does...
@@ -132,9 +145,9 @@ fn find_crosses(grid: &Grid<Letter>, idx: GridIndex) -> bool {
         .collect::<Vec<_>>();
     // Get the lines of potential crosses.
     let lines = [
-        [neighbors[0], neighbors[4]],
+        [neighbors[0], neighbors[4]], // technically useless
         [neighbors[1], neighbors[5]],
-        [neighbors[2], neighbors[6]],
+        [neighbors[2], neighbors[6]], // technically useless
         [neighbors[3], neighbors[7]],
     ];
 
@@ -183,10 +196,25 @@ mod test {
     fn test_find_crosses() {
         use Letter::*;
 
-        let cross = vec![X, M, X, M, A, S, X, S, X];
-        let grid = Grid::new(3, 3, cross);
+        // Cardinal neighbors _do not_ count as crosses.
+        let plus = vec![
+            X, M, X, // row 0
+            M, A, S, // row 1
+            X, S, X, // row 2
+        ];
+        let grid = Grid::new(3, 3, plus);
         let center = GridIndex::new(1, 1);
-        dbg!(grid[center]);
+        assert!(grid[center] == A);
+
+        assert!(!find_crosses(&grid, center));
+
+        // It _has_ to be diagonal.
+        let cross = vec![
+            S, X, M,
+            X, A, X,
+            S, X, M,
+        ];
+        let grid = Grid::new(3, 3, cross);
 
         assert!(find_crosses(&grid, center));
     }
