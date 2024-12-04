@@ -54,9 +54,7 @@ fn part_one(data: &Grid<Letter>) -> usize {
             
             // Check that there is an A in the same direction.
             let a_indices = m_indices.into_iter().filter_map(|(dir, idx)| {
-                let Some(idx) = idx else {
-                    return None;
-                };
+                let idx = idx?;
                 let idx = find_neighbors(data, idx)[dir]?;
 
                 match data.get(idx) {
