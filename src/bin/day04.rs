@@ -51,7 +51,7 @@ fn part_one(data: &Grid<Letter>) -> usize {
                 .enumerate()
                 .filter(|(_, cell)| cell.is_some_and(|ch| data.get(ch) == Some(&Letter::M)))
                 .collect::<Vec<_>>();
-            
+
             // Check that there is an A in the same direction.
             let a_indices = m_indices.into_iter().filter_map(|(dir, idx)| {
                 let idx = idx?;
@@ -127,7 +127,7 @@ fn part_two(grid: &Grid<Letter>) -> usize {
 /// Note that crosses only count if the lines are _diagonal_,
 /// not horizontal or vertical.
 fn find_crosses(grid: &Grid<Letter>, idx: GridIndex) -> bool {
-    // This is a pathological check. It _should_ never get 
+    // This is a pathological check. It _should_ never get
     // to this point, but just in case it does...
     assert!(grid[idx] == Letter::A);
 
@@ -208,9 +208,9 @@ mod test {
 
         // It _has_ to be diagonal.
         let cross = vec![
-            S, X, M,
-            X, A, X,
-            S, X, M,
+            S, X, M, // row 0
+            X, A, X, // row 1
+            S, X, M, // row 2
         ];
         let grid = Grid::new(3, 3, cross);
 
