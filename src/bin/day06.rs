@@ -6,6 +6,7 @@
 
 #![allow(dead_code)]
 
+use std::collections::HashSet;
 use std::fs::read_to_string;
 
 use advent2024::AdventError;
@@ -71,10 +72,81 @@ fn parse_input(file: &str) -> Result<(Guard, Grid<bool>), AdventError> {
     Ok((guard, grid))
 }
 
+/// Find the amount of space the guard takes up.
+///
+/// The guard will move as far as they can in their current
+/// direction until they find an obstacle, which in this
+/// case is represented by [Grid::get] returning `Some(true)`.
+///
+/// When `Some(false)` is returned, that says that there is
+/// still space to move. When [Option::None] is returned,
+/// that means that the guard has moved off the space the
+/// grid represents and we have our answer.
+fn part_one(guard: &Guard, grid: &Grid<bool>) -> usize {
+    let mut set = HashSet::new();
+    set.insert(guard.position);
+
+    let mut guard = guard.clone();
+    loop {
+        match guard.direction {
+            Direction::North => match grid.up_cell(guard.position) {
+                Some(true) => {
+                    guard.direction = Direction::East;
+                }
+                Some(false) => {
+                    // This `.expect()` is safe since we _just_ proved it exists.
+                    let next = grid.up_index(guard.position).expect("Index should exist");
+                    set.insert(next);
+                    guard.position = next;
+                }
+                None => break,
+            },
+            Direction::East => match grid.right_cell(guard.position) {
+                Some(true) => {
+                    guard.direction = Direction::South;
+                }
+                Some(false) => {
+                    let next = grid
+                        .right_index(guard.position)
+                        .expect("Index should exist");
+                    set.insert(next);
+                    guard.position = next;
+                }
+                None => break,
+            },
+            Direction::South => match grid.down_cell(guard.position) {
+                Some(true) => {
+                    guard.direction = Direction::West;
+                }
+                Some(false) => {
+                    let next = grid.down_index(guard.position).expect("Index should exist");
+                    set.insert(next);
+                    guard.position = next;
+                }
+                None => break,
+            },
+            Direction::West => match grid.left_cell(guard.position) {
+                Some(true) => {
+                    guard.direction = Direction::North;
+                }
+                Some(false) => {
+                    let next = grid.left_index(guard.position).expect("Index should exist");
+                    set.insert(next);
+                    guard.position = next;
+                }
+                None => break,
+            },
+        }
+    }
+
+    set.len()
+}
+
 fn main() -> Result<(), AdventError> {
     let file = read_to_string("src/input/day06.txt")?;
     let (guard, grid) = parse_input(&file)?;
 
+    println!("The guard passes through {} points", part_one(&guard, &grid));
     Ok(())
 }
 
@@ -99,5 +171,12 @@ mod test {
         assert_eq!(grid.height(), 10, "Grid size incorrectly parsed");
         assert_eq!(grid.width(), 10, "Grid size incorrectly parsed");
         assert_eq!(grid[(4, 0)], true, "Grid data incorrectly parsed");
+    }
+
+    #[test]
+    fn test_part_one() {
+        let (guard, grid) = &*INPUT;
+
+        assert_eq!(part_one(guard, grid), 41);
     }
 }
