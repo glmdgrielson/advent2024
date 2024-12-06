@@ -11,4 +11,7 @@ pub enum AdventError {
     /// An error in the format of the input file.
     #[error("Parsing error: {0}")]
     Parse(String),
+    /// The input has violated a contract.
+    #[error("Contract violation: {0}")]
+    Data(String),
 }
