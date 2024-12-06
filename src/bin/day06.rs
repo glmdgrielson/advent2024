@@ -142,6 +142,12 @@ fn part_one(guard: &Guard, grid: &Grid<bool>) -> usize {
     set.len()
 }
 
+/// Find the number of points where a loop can
+/// be created in the guard's path.
+fn part_two(guard: &Guard, grid: &Grid<bool>) -> usize {
+    todo!()
+}
+
 fn main() -> Result<(), AdventError> {
     let file = read_to_string("src/input/day06.txt")?;
     let (guard, grid) = parse_input(&file)?;
@@ -178,5 +184,12 @@ mod test {
         let (guard, grid) = &*INPUT;
 
         assert_eq!(part_one(guard, grid), 41);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let (guard, grid) = &*INPUT;
+
+        assert_eq!(part_two(guard, grid), 6);
     }
 }
