@@ -152,6 +152,8 @@ fn part_two(guard: &Guard, grid: &Grid<bool>) -> usize {
         .iter()
         .skip(1)
         .filter(|&guard| {
+            // This _genuinely_ causes a different result and I don't know why.
+            let guard = guard.clone();
             let position = guard.position;
             let start = match guard.direction {
                 Direction::North => grid.down_index(guard.position).unwrap(),
@@ -198,9 +200,6 @@ fn make_path(guard: &Guard, grid: &Grid<bool>) -> (HashSet<Guard>, bool) {
             Direction::East => match grid.right_cell(guard.position) {
                 Some(true) => {
                     guard.direction = Direction::South;
-                    if !set.insert(guard) {
-                        return (set, true);
-                    }
                 }
                 Some(false) => {
                     let next = grid
@@ -216,9 +215,6 @@ fn make_path(guard: &Guard, grid: &Grid<bool>) -> (HashSet<Guard>, bool) {
             Direction::South => match grid.down_cell(guard.position) {
                 Some(true) => {
                     guard.direction = Direction::West;
-                    if !set.insert(guard) {
-                        return (set, true);
-                    }
                 }
                 Some(false) => {
                     let next = grid.down_index(guard.position).expect("Index should exist");
@@ -232,9 +228,6 @@ fn make_path(guard: &Guard, grid: &Grid<bool>) -> (HashSet<Guard>, bool) {
             Direction::West => match grid.left_cell(guard.position) {
                 Some(true) => {
                     guard.direction = Direction::North;
-                    if !set.insert(guard) {
-                        return (set, true);
-                    }
                 }
                 Some(false) => {
                     let next = grid.left_index(guard.position).expect("Index should exist");
