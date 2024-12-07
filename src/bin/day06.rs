@@ -148,9 +148,9 @@ fn part_two(guard: &Guard, grid: &Grid<bool>) -> usize {
     let (taken, looped) = make_path(guard, grid);
     assert!(!looped, "Invalid data");
 
-    taken
+    let looped_points = taken
         .iter()
-        .skip(1)
+        .filter(|&point| point != guard)
         .filter(|&guard| {
             // This _genuinely_ causes a different result and I don't know why.
             let guard = guard.clone();
@@ -170,7 +170,10 @@ fn part_two(guard: &Guard, grid: &Grid<bool>) -> usize {
             grid[position] = true;
             make_path(&guard, &grid).1
         })
-        .count()
+        .map(|point| point.position)
+        .collect::<HashSet<_>>();
+
+    looped_points.len()
 }
 
 fn make_path(guard: &Guard, grid: &Grid<bool>) -> (HashSet<Guard>, bool) {
