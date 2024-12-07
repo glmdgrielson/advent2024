@@ -72,11 +72,38 @@ fn part_one(data: &[Equation]) -> u64 {
         .sum()
 }
 
+fn part_two(data: &[Equation]) -> u64 {
+    data.iter()
+        .filter(|eq| {
+            let mut totals = vec![eq.operands[0]];
+            for &oper in &eq.operands[1..] {
+                totals = totals
+                    .into_iter()
+                    .flat_map(|total| [total + oper, total * oper, concatenate(total, oper)])
+                    .collect();
+            }
+
+            totals.contains(&eq.total)
+        })
+        .map(|eq| eq.total)
+        .sum()
+}
+
+/// Concatenate two integers.
+fn concatenate(a: u64, b: u64) -> u64 {
+    let mut magnitude = 1;
+    while magnitude <= b {
+        magnitude *= 10;
+    }
+    a * magnitude + b
+}
+
 fn main() -> Result<(), AdventError> {
     let file = read_to_string("src/input/day07.txt")?;
     let data = parse_input(&file)?;
 
     println!("Sum of possible equations is {}", part_one(&data));
+    println!("Sum of possible three-op equations is {}", part_two(&data));
     Ok(())
 }
 
@@ -110,5 +137,17 @@ mod tests {
         let data = &*INPUT;
 
         assert_eq!(part_one(&data), 3749);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let data = &*INPUT;
+
+        assert_eq!(part_two(&data), 11387);
+    }
+
+    #[test]
+    fn test_concat() {
+        assert_eq!(concatenate(12, 345), 12345);
     }
 }
