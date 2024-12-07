@@ -155,7 +155,7 @@ fn part_two(guard: &Guard, grid: &Grid<bool>) -> usize {
             let position = guard.position;
             let start = match guard.direction {
                 Direction::North => grid.down_index(guard.position).unwrap(),
-                Direction::East => grid.right_index(guard.position).unwrap(),
+                Direction::East => grid.left_index(guard.position).unwrap(),
                 Direction::South => grid.up_index(guard.position).unwrap(),
                 Direction::West => grid.right_index(guard.position).unwrap(),
             };
