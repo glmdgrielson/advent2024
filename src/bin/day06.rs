@@ -278,6 +278,26 @@ mod test {
         parse_input(&file).unwrap()
     });
 
+    static TEST_CASE_1: &'static str = ".#....
+.....#
+...^..
+#.....
+....#.";
+
+    static TEST_CASE_2: &'static str = ".#..
+#..#
+....
+^...
+#...
+.#..";
+
+    #[test]
+    fn test_case() {
+        let (guard, grid) = parse_input(TEST_CASE_2).unwrap();
+
+        assert_eq!(part_two(&guard, &grid), 1);
+    }
+
     #[test]
     fn test_parse_input() {
         let (guard, grid) = &*INPUT;
