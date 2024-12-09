@@ -99,6 +99,53 @@ fn defragment(data: &[Space]) -> Vec<Option<usize>> {
     disk
 }
 
+/// Find the checksum of the defragmented filesystem.
+fn part_two(data: &[Space]) -> usize {
+    let disk = clean_space(data);
+
+    disk.iter()
+        .enumerate()
+        .filter_map(|(idx, file)| file.index.map(|id| id * idx))
+        .sum()
+}
+
+fn clean_space(data: &[Space]) -> Vec<Space> {
+    let mut disk = data.to_vec();
+    let mut start = 0;
+    let mut end = disk.len() - 1;
+    let mut changed = true;
+
+    loop {
+        if !changed {
+            break;
+        }
+        // Find the first space.
+        while disk[start].index.is_some() {
+            start += 1;
+        }
+
+        let end = disk.iter().rposition(|file| file.size <= disk[start].size);
+        if let Some(end) = end {
+            if start > end {
+                changed = false;
+                continue;
+            } else {
+                disk[start].size -= disk[end].size;
+                let file = disk.remove(end);
+                disk.insert(start, file);
+                changed = true;
+            }
+        }
+
+        start += 1;
+        if disk.get(start).is_none() {
+            start = 0;
+        }
+    }
+
+    disk
+}
+
 fn main() -> Result<(), AdventError> {
     let file = read_to_string("src/input/day09.txt")?;
     let data = parse_input(&file)?;
@@ -175,5 +222,19 @@ mod test {
                 0, 0, 9, 9, 8, 1, 1, 1, 8, 8, 8, 2, 7, 7, 7, 3, 3, 3, 6, 4, 4, 6, 5, 5, 5, 5, 6, 6
             ]
         )
+    }
+
+    #[test]
+    fn test_clean_space() {
+        let data = &*INPUT;
+
+        let disk = clean_space(&data);
+
+        let disk = disk
+            .iter()
+            .filter_map(|file| file.index)
+            .collect::<Vec<_>>();
+
+        assert_eq!(disk, vec![0, 9, 2, 1, 7, 4, 3, 5, 6, 8]);
     }
 }
