@@ -38,16 +38,10 @@ fn part_one(data: &Grid<char>) -> usize {
         .indices()
         .filter(|&idx| data[idx] != '.')
         .map(|idx| (data[idx], idx))
-        .collect::<Vec<_>>();
+        .into_group_map();
 
-    let mut map: HashMap<char, Vec<GridIndex>> = HashMap::new();
-    for (frequency, idx) in antennae {
-        map.entry(frequency)
-            .and_modify(|nodes| nodes.push(idx))
-            .or_insert(vec![idx]);
-    }
-
-    map.values()
+    antennae
+        .values()
         .flat_map(|nodes| {
             nodes.into_iter().permutations(2).map(|pair| {
                 let one = pair[0];
@@ -85,16 +79,10 @@ fn part_two(data: &Grid<char>) -> usize {
         .indices()
         .filter(|&idx| data[idx] != '.')
         .map(|idx| (data[idx], idx))
-        .collect::<Vec<_>>();
+        .into_group_map();
 
-    let mut map: HashMap<char, Vec<GridIndex>> = HashMap::new();
-    for (frequency, idx) in antennae {
-        map.entry(frequency)
-            .and_modify(|nodes| nodes.push(idx))
-            .or_insert(vec![idx]);
-    }
-
-    map.values()
+    antennae
+        .values()
         .flat_map(|nodes| {
             nodes.into_iter().permutations(2).flat_map(|pair| {
                 let one = pair[0];
