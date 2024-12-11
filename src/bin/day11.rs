@@ -31,7 +31,7 @@ fn parse_input(file: &str) -> Result<Vec<Stone>, AdventError> {
         .map(|stone| {
             stone
                 .parse::<u64>()
-                .map(|stone| Stone(stone))
+                .map(Stone)
                 .map_err(|err| AdventError::Parse(format!("Invalid stone {}", err)))
         })
         .collect()

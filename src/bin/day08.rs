@@ -4,7 +4,7 @@
 //! put a stop to his plan to sell terrible Easter
 //! chocolate for Christmas! (Wait a few months, pal!)
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::fs::read_to_string;
 
 use advent2024::AdventError;
@@ -43,7 +43,7 @@ fn part_one(data: &Grid<char>) -> usize {
     antennae
         .values()
         .flat_map(|nodes| {
-            nodes.into_iter().permutations(2).map(|pair| {
+            nodes.iter().permutations(2).map(|pair| {
                 let one = pair[0];
                 let two = pair[1];
 
@@ -84,7 +84,7 @@ fn part_two(data: &Grid<char>) -> usize {
     antennae
         .values()
         .flat_map(|nodes| {
-            nodes.into_iter().permutations(2).flat_map(|pair| {
+            nodes.iter().permutations(2).flat_map(|pair| {
                 let one = pair[0];
                 let two = pair[1];
 
@@ -100,10 +100,10 @@ fn part_two(data: &Grid<char>) -> usize {
                 // but somehow it all compiles nicely!
                 (0..)
                     .map(move |count| {
-                        let x = x2 as isize + x * count;
+                        let x = x2 + x * count;
                         let x = x as usize;
 
-                        let y = y2 as isize + y * count;
+                        let y = y2 + y * count;
                         let y = y as usize;
 
                         GridIndex::new(x, y)

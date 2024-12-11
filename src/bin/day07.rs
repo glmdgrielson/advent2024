@@ -4,7 +4,6 @@
 //! engineers and now they can't fix the bridge! We need to
 //! do something about it so we can get back to work!
 
-use std::collections::HashSet;
 use std::fs::read_to_string;
 
 use advent2024::AdventError;
@@ -36,7 +35,7 @@ fn parse_input(file: &str) -> Result<Vec<Equation>, AdventError> {
                 .map_err(|err| AdventError::Parse(format!("Error parsing total: {}", err)))?;
 
             let operands = operands
-                .into_iter()
+                .iter()
                 .map(|oper| {
                     oper.parse::<u64>().map_err(|err| {
                         AdventError::Parse(format!("Error parsing operand: {}", err))
